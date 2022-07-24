@@ -1,8 +1,13 @@
+import { Button } from '@mui/material'
+import { unstable_getServerSession } from 'next-auth'
+import { signOut, useSession } from 'next-auth/react'
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
+import { authOptions } from './api/auth/[...nextauth]'
 
 export default function Home() {
+
   return (
     <div className={styles.container}>
       <Head>
@@ -51,7 +56,7 @@ export default function Home() {
           </a>
         </div>
       </main>
-
+      <Button variant='contained' onClick={_ => signOut()} >SignOut</Button>
       <footer className={styles.footer}>
         <a
           href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
@@ -66,4 +71,22 @@ export default function Home() {
       </footer>
     </div>
   )
+}
+
+export async function getServerSideProps(context) {
+  const session = await unstable_getServerSession(context.req, context.res, authOptions)
+  if(!session) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false
+      }
+    }
+  }
+
+  return {
+    props: {
+
+    }
+  }
 }
